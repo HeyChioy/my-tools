@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Show My Password
 // @namespace    https://github.com/HeyChioy/my-tools/tree/master/tampermonkey/ShowMyPwd
-// @version      0.1
+// @version      0.2
 // @description  Automatic show your password in browser console if your browser has saved your password.
 // @author       KSR
 // @include      *
