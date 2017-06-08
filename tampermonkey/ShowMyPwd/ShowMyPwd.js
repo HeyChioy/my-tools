@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name         ShowMyPwd
-// @namespace    http://chioy.cn/
+// @name         Show My Password
+// @namespace    https://github.com/HeyChioy/my-tools/tree/master/tampermonkey/ShowMyPwd
 // @version      0.1
 // @description  Automatic show your password in browser console if your browser has saved your password.
 // @author       KSR
-// @match        http://*/*
-// @match        https://*/*
+// @include      *
 // @grant        none
+// @run-at       document-end
+// @noframes
 // ==/UserScript==
 
 (function () {
@@ -34,7 +35,7 @@
             var ipt_pwd = document.querySelector("input[type='password']");
             if (!!ipt_pwd && !!ipt_pwd.value) {
                 console.log("Your Pwd:");
-                console.log("%c" + ipt_pwd.value,"color:blue;");
+                console.log("%c" + ipt_pwd.value,"color:blue;font-size:2em;");
                 clearInterval(id);
             }
         } catch (e) {
