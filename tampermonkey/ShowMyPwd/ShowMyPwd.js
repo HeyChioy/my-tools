@@ -10,24 +10,46 @@
 // @noframes
 // ==/UserScript==
 
+console.log("AutoShowPwd run in ", location.href);
 (function () {
     'use strict';
     // Your code here...
-    console.log("AutoShowPwd run in ", location.href);
-    (function () {
-        var ipt_pwd = document.querySelector("input[type='password']");
-        if (!ipt_pwd) {
-            return;
-        }
-        var btn = document.createElement('button');
-        btn.innerText = "ShowPwd";
-        btn.className = 'btn btn-primary';
-        btn.style = "position:absolute;float:right;";
-        btn.onclick = function () {
-            ipt_pwd.value = prompt("Your Password", ipt_pwd.value) || ipt_pwd.value;
+    const buildBtn = (passwordInput, text = '🔒') => {
+        var btn = document.createElement('div');
+        btn.setAttribute('data-clipboard-text', passwordInput.value);
+        btn.id = 'tampermonkey-showMyPwd';
+        btn.innerText = text;
+        const style = "position:absolute;right:0;" +
+              "display:inline-block;" +
+              "cursor:pointer;" +
+              "padding:0.2em;" +
+              "font-size: 2em;";
+        btn.style = style;
+        btn.onclick = function (envent) {
+            prompt("Your Password", passwordInput.value);
             return false;
         };
-        ipt_pwd.parentElement.appendChild(btn);
+        btn.onmouseover = () => {
+            btn.innerText = '🔓';
+            passwordInput.type = 'text';
+        };
+        btn.onmouseout = () => {
+            btn.innerText = '🔒';
+            passwordInput.type = 'password';
+        };
+        return btn;
+    };
+    const insert = (container, element) => {
+        container.appendChild(element);
+    };
+    (function () {
+        var passwordInput = document.querySelector("input[type='password']");
+        if (!passwordInput) {
+            return;
+        }
+        const btn = buildBtn(passwordInput);
+        const container = passwordInput.parentElement;
+        insert(container, btn);
     })();
     var id;
     id = setInterval(function () {
