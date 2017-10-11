@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         LiaoXuefeng Wiki SideBar Scrolling
-// @namespace    http://tampermonkey.net/
+// @namespace    LiaoXuefengWikiSideBarScrolling.KyuuSeiryuu
 // @version      0.2
 // @description  廖雪峰博客菜单栏和内容栏滚动
-// @author       You
+// @author       KyuuSeiryuu
 // @match        https://www.liaoxuefeng.com/wiki/*
 // @grant        GM_addStyle
 // ==/UserScript==

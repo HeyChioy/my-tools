@@ -1,22 +1,20 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      0.1
+// @version      0.2
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        http://www.bilibili.com/video/av*
 // @match        https://www.bilibili.com/video/av*
-// @grant        none
+// @grant        GM_addStyle
 // ==/UserScript==
 
 (function() {
     'use strict';
+    console.log({ GM_addStyle });
     const storage = { id: 0 };
     const giveCoin = () => {
-        const styleSheet = `.coin-wrap.fade-in, .wnd-mask { display: none !important; }`;// 样式覆盖
-        const s = document.createElement('style');
-        s.innerText = styleSheet;
-        document.body.appendChild(s);
+        GM_addStyle(`.coin-wrap.fade-in, .wnd-mask { display: none !important; }`);// 样式覆盖
         $('.b-icon.b-icon-a.b-icon-anim-coin').click();
         setTimeout(() => {
             $('.coin-sure.b-btn').click(); // 确认投币
