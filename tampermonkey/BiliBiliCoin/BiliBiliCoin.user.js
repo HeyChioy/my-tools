@@ -18,6 +18,7 @@
     const giveCoin = () => {
         GM_addStyle(`.coin-wrap.fade-in, .wnd-mask { display: none !important; }`);// 样式覆盖
         $('.block.coin').click();
+        $(".v-title-line.v-coin.coin_btn").click();
         setTimeout(() => {
             $('.coin-sure.b-btn').click(); // 确认投币
         });
