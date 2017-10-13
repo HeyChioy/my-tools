@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      1.0
+// @version      1.1
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        http://www.bilibili.com/video/av*
 // @match        https://www.bilibili.com/video/av*
 // @grant        GM_addStyle
+// @grant        GM_notification
 // @homepage     https://github.com/HeyChioy/my-tools/tree/master/tampermonkey/BiliBiliCoin
 // ==/UserScript==
 
@@ -15,7 +16,7 @@
     const storage = { id: 0 };
     const giveCoin = () => {
         GM_addStyle(`.coin-wrap.fade-in, .wnd-mask { display: none !important; }`);// 样式覆盖
-        $('.b-icon.b-icon-a.b-icon-anim-coin').click();
+        $('.block.coin').click();
         setTimeout(() => {
             $('.coin-sure.b-btn').click(); // 确认投币
         });
@@ -43,12 +44,14 @@
         return now / total > 0.3;
     };
     const startCheck = () => {
-        console.info('自动投币启动');
+        if ($('.block.coin .t-right-top').text() === '已投币') {
+            return;
+        }
         storage.id = setInterval(() => {
             const totalTime = $('.bilibili-player-video-time-total').text();
             const nowTime = $('.bilibili-player-video-time-now').text();
             if (checkTime(totalTime, nowTime)) {
-                console.log('已投币～');
+                GM_notification({ text: '已投币～', timeout: 1 });
                 clearInterval(storage.id);
                 giveCoin();
             }
