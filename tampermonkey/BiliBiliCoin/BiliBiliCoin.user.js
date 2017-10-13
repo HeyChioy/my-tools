@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      1.3
+// @version      1.4
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
-// @match        http://www.bilibili.com/video/av*
-// @match        https://www.bilibili.com/video/av*
+// @match        *://www.bilibili.com/video/av*
+// @match        *://bangumi.bilibili.com/anime/*
 // @grant        GM_addStyle
 // @grant        GM_notification
 // @grant        GM_download
@@ -14,13 +14,43 @@
 
 (function() {
     'use strict';
-    const storage = { id: 0 };
+    const storage = { id: 0, boot: 0, debug: false, level: 1, autoClear: true, maxLogStack: 20, maxBootTimes: 20 };
+    const stack = { logStack: 0, bootTimes: 0 };
+    const debug = (msg) => {
+        const { debug: d, level, autoClear: a, maxLogStack: m } = storage;
+        const { logStack: s } = stack;
+        if (!d) return;
+        const l = [console.log, console.warn][level];
+        if (a && s >= m) {
+            console.clear();
+            stack.logStack = 0;
+        }
+        stack.logStack += 1;
+        l('BiliBili 自动投币：' + msg);
+    };
+    const getCoverImage = () => {
+        const src = 'http:' + $(".cover_image").attr('src');
+        return {
+            src,
+            name: src ? document.title + src.substr(src.lastIndexOf('.')) : ''
+        };
+    };
+    const appendCoverImageDownloadBtn = () => {
+        const image = getCoverImage();
+        if (!image.src || !image.name) return;
+        const button = $('<div class="bgray-btn show">下载<br>封面</div>').click(() => {
+            GM_download(image.src, image.name);
+        });
+        $('.bgray-btn-wrap').append(button);
+    };
     const giveCoin = () => {
-        GM_addStyle(`.coin-wrap.fade-in, .wnd-mask { display: none !important; }`);// 样式覆盖
-        $('.block.coin').click();
-        $(".v-title-line.v-coin.coin_btn").click();
+        debug('开始投币');
+        GM_addStyle(`.coin-wrap.fade-in, .wnd-mask, .m-layer.m_layer.m-button { display: none !important; }`);// 样式覆盖
+        $(".icon_btn_coin").click();
+        $('.coin_btn').click();
         setTimeout(() => {
             $('.coin-sure.b-btn').click(); // 确认投币
+            $('.b-btn.ok').click();
         });
     };
     const formatHMS = (timeString) => {
@@ -43,27 +73,33 @@
     const checkTime = (totalTime, nowTime) => {
         const total = totalSeconds(formatHMS(totalTime));
         const now = totalSeconds(formatHMS(nowTime));
-        return now / total > 0.3;
+        if (total === 0) return false;
+        return total === now || now / total > 0.3;
     };
     const completed = () => {
+        debug('投币完成');
         const title = document.title;
-        const image = 'http:' + $(".cover_image").attr('src');
-        const text = '已投币，点击此处下载封面';
+        const image = getCoverImage();
+        const text = `已投币! ${image.src && image.name ? '点击此处下载封面' : '' }`;
         const options = {
             title,
             text,
             image,
-            onclick: () => {
-                GM_download(image, title + image.substr(image.lastIndexOf('.')));
-            }
+            onclick: () => GM_download(image.src, image.name)
         };
         GM_notification(options);
     };
     const startCheck = () => {
-        if ($('.block.coin .t-right-top').text() === '已投币') return;
+        if ($('.block.coin .t-right-top').text() === '已投币') {
+            debug('该视频已投过硬币～');
+            return;
+        }
+        debug('开始检测进度...');
+        const totalTime = $('.bilibili-player-video-time-total').text();
+        debug('总时长：' + totalTime);
         storage.id = setInterval(() => {
-            const totalTime = $('.bilibili-player-video-time-total').text();
             const nowTime = $('.bilibili-player-video-time-now').text();
+            debug('当前播放位置：' + nowTime);
             if (checkTime(totalTime, nowTime)) {
                 clearInterval(storage.id);
                 giveCoin();
@@ -71,6 +107,25 @@
             }
         }, 1000);
     };
-    setTimeout(startCheck, 5000);
+    const boot = () => {
+        debug('---欢迎使用 BiliBili 自动投币---');
+        storage.boot = setInterval(() => {
+            let totalTime = $('.bilibili-player-video-time-total').text();
+            const seconds = totalSeconds(formatHMS(totalTime));
+            if (seconds !== 0) {
+                debug('BiliBili 自动投币启动');
+                clearInterval(storage.boot);
+                startCheck();
+                stack.bootTimes = 0;
+            }
+            stack.bootTimes += 1;
+            if (stack.bootTimes > storage.maxBootTimes) {
+                clearInterval(storage.boot);
+                debug('不支持的番剧！');
+            }
+        }, 1000);
+    };
+    setTimeout(boot, 3000);
+    appendCoverImageDownloadBtn();
 })();
 
