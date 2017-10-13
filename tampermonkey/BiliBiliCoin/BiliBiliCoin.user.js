@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      1.1
+// @version      1.2
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        http://www.bilibili.com/video/av*
 // @match        https://www.bilibili.com/video/av*
 // @grant        GM_addStyle
 // @grant        GM_notification
+// @grant        GM_download
 // @homepage     https://github.com/HeyChioy/my-tools/tree/master/tampermonkey/BiliBiliCoin
 // ==/UserScript==
 
@@ -43,19 +44,32 @@
         const now = totalSeconds(formatHMS(nowTime));
         return now / total > 0.3;
     };
+    const completed = () => {
+        const title = document.title;
+        const image = 'http:' + $(".cover_image").attr('src');
+        const text = '已投币，点击此处下载封面';
+        const options = {
+            title,
+            text,
+            image,
+            onclick: () => {
+                GM_download(image, title + image.substr(image.lastIndexOf('.')));
+            }
+        };
+        GM_notification(options);
+    };
     const startCheck = () => {
-        if ($('.block.coin .t-right-top').text() === '已投币') {
-            return;
-        }
+        if ($('.block.coin .t-right-top').text() === '已投币') return;
         storage.id = setInterval(() => {
             const totalTime = $('.bilibili-player-video-time-total').text();
             const nowTime = $('.bilibili-player-video-time-now').text();
             if (checkTime(totalTime, nowTime)) {
-                GM_notification({ text: '已投币～', timeout: 1 });
                 clearInterval(storage.id);
                 giveCoin();
+                completed();
             }
         }, 1000);
     };
     setTimeout(startCheck, 5000);
 })();
+
