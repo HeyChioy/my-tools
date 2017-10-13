@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      1.4
+// @version      1.5
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        *://www.bilibili.com/video/av*
@@ -37,11 +37,32 @@
     };
     const appendCoverImageDownloadBtn = () => {
         const image = getCoverImage();
+        const img = $(`<img src=${image.src} class='bili-cover-preview' width='250px' />`);
+        GM_addStyle(`
+            .bili-cover-preview {
+                position: fixed;
+                top: 10%;
+                right: 10%;
+                z-index: 30;
+            }
+        `);
+        $('body').append(img);
+        img.hide();
         if (!image.src || !image.name) return;
-        const button = $('<div class="bgray-btn show">下载<br>封面</div>').click(() => {
-            GM_download(image.src, image.name);
+        const download = $('<div class="bgray-btn show">下载<br>封面</div>').click(() => {
+            GM_download({
+                url: image.src,
+                name: image.name,
+                saveAs: true
+            });
+        }).mouseover(() => {
+            console.log('mouseover');
+            img.show();
+        }).mouseout(() => {
+            console.log('mouseout');
+            img.hide();
         });
-        $('.bgray-btn-wrap').append(button);
+        $('.bgray-btn-wrap').append(download);
     };
     const giveCoin = () => {
         debug('开始投币');
@@ -84,8 +105,12 @@
         const options = {
             title,
             text,
-            image,
-            onclick: () => GM_download(image.src, image.name)
+            image: image.src,
+            onclick: () => GM_download({
+                url: image.src,
+                naem: image.name,
+                saveAs: true
+            })
         };
         GM_notification(options);
     };
