@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      1.5
+// @version      2.0
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        *://www.bilibili.com/video/av*
@@ -132,7 +132,16 @@
             }
         }, 1000);
     };
+    const hasFllowed = () => {
+        return $('.b-btn.f').text() !== "+ 关注";
+    };
     const boot = () => {
+        if (!hasFllowed()) {
+            GM_notification({
+                text: '你未关注该UP主，将不会自动投币给他～'
+            });
+            return; // 未关注的 UP主 不启用
+        }
         debug('---欢迎使用 BiliBili 自动投币---');
         storage.boot = setInterval(() => {
             let totalTime = $('.bilibili-player-video-time-total').text();
