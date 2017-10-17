@@ -14,7 +14,7 @@
 
 (function() {
     'use strict';
-    const storage = { id: 0, boot: 0, debug: false, level: 1, autoClear: true, maxLogStack: 20, maxBootTimes: 20 };
+    const storage = { id: 0, boot: 0, debug: true, level: 1, autoClear: true, maxLogStack: 20, maxBootTimes: 20 };
     const stack = { logStack: 0, bootTimes: 0 };
     const debug = (msg) => {
         const { debug: d, level, autoClear: a, maxLogStack: m } = storage;
@@ -66,6 +66,12 @@
     };
     const giveCoin = () => {
         debug('开始投币');
+        if (!hasFllowed()) {
+            GM_notification({
+                text: '你未关注该UP主，将不会自动投币给他～'
+            });
+            return; // 未关注的 UP主 不启用
+        }
         GM_addStyle(`.coin-wrap.fade-in, .wnd-mask, .m-layer.m_layer.m-button { display: none !important; }`);// 样式覆盖
         $(".icon_btn_coin").click();
         $('.coin_btn').click();
@@ -133,15 +139,9 @@
         }, 1000);
     };
     const hasFllowed = () => {
-        return $('.b-btn.f').text() !== "+ 关注";
+        return $('.b-btn.f').text() === "已关注";
     };
     const boot = () => {
-        if (!hasFllowed()) {
-            GM_notification({
-                text: '你未关注该UP主，将不会自动投币给他～'
-            });
-            return; // 未关注的 UP主 不启用
-        }
         debug('---欢迎使用 BiliBili 自动投币---');
         storage.boot = setInterval(() => {
             let totalTime = $('.bilibili-player-video-time-total').text();
