@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BiliBili 自动投币
 // @namespace    BiliBiliAutoCoin.kyuuseiryuu
-// @version      2.0
+// @version      2.1
 // @description  BiliBili 自动投币
 // @author       KyuuSeiryuu
 // @match        *://www.bilibili.com/video/av*
