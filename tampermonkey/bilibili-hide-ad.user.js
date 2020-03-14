@@ -7,6 +7,7 @@
 // @match        https://www.bilibili.com/
 // @grant        none
 // @run-at       document-end
+// @updateURL    https://github.com/kyuuseiryuu/my-tools/raw/master/tampermonkey/bilibili-hide-ad.user.js
 // ==/UserScript==
 
 (function() {
