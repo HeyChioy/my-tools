@@ -1,4 +1,3 @@
-# Python
-/Python/info/*
-/Python/*.pyc
-/Python/*.pkl
+# ide
+/.idea
+/.vscode
