@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilibili AD
-// @namespace    http://tampermonkey.kyuuseiryuu.me/
-// @version      1.0
+// @namespace    http://tampermonkey.kyuuseiryuu.com/
+// @version      1.1
 // @description  Bilibili 隐藏广告
 // @author       kyuuseiryuu
 // @match        https://www.bilibili.com/
